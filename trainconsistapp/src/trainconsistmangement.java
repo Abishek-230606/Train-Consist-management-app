@@ -6,37 +6,39 @@
  *  * Use Case 10: Count Total Seats using reduce()
  *
  * @author Abishek JS
- * @version 9.0
+ * @version 11.0
  */
 
 import java.util.*;
-import java.util.stream.*;
+import java.util.regex.*;
 
 public class trainconsistmangement  {
-    static class Bogie {
-        String name;
-        int capacity;
-        Bogie(String name, int capacity) {
-            this.name = name;
-            this.capacity = capacity;
-        }
-    }
-
     public static void main(String[] args) {
-        System.out.println("===== UC10 - Total Seating Capacity =====\n");
 
-        List<Bogie> bogies = Arrays.asList(
-                new Bogie("B1", 72),
-                new Bogie("B2", 50),
-                new Bogie("B3", 80)
-        );
+        System.out.println("===== UC11 - Regex Validation =====\n");
 
-        // Stream + map + reduce
-        int totalSeats = bogies.stream()
-                .map(b -> b.capacity)
-                .reduce(0, Integer::sum);
+        // Sample Inputs
+        String trainId = "TRN-1234";
+        String cargoCode = "PET-AB";
 
-        System.out.println("Total Seating Capacity: " + totalSeats);
-        System.out.println("------------------ ");
+        // Regex Patterns
+        String trainPattern = "TRN-\\d{4}";
+        String cargoPattern = "PET-[A-Z]{2}";
+
+        // Compile patterns
+        Pattern p1 = Pattern.compile(trainPattern);
+        Pattern p2 = Pattern.compile(cargoPattern);
+
+        // Match input
+        Matcher m1 = p1.matcher(trainId);
+        Matcher m2 = p2.matcher(cargoCode);
+
+        // Validate
+        boolean isTrainValid = m1.matches();
+        boolean isCargoValid = m2.matches();
+
+        // Output
+        System.out.println("Train ID: " + trainId + " -> " + (isTrainValid ? "Valid" : "Invalid"));
+        System.out.println("Cargo Code: " + cargoCode + " -> " + (isCargoValid ? "Valid" : "Invalid"));
     }
 }
