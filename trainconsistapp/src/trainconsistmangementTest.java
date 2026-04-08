@@ -5,129 +5,136 @@ public class trainconsistmangementTest {
 
     static class Bogie {
         String name;
-        int capacity;
+        String type;
 
-        Bogie(String name, int capacity) {
+        // Constructor (NO return type here)
+        Bogie(String name, String type) {
             this.name = name;
-            this.capacity = capacity;
+            this.type = type;
         }
     }
 
-    // Filter method
-    static List<Bogie> filterBogies(List<Bogie> bogies, int threshold) {
+    // Grouping method
+    static Map<String, List<Bogie>> groupBogies(List<Bogie> bogies) {
         return bogies.stream()
-                .filter(b -> b.capacity > threshold)
-                .collect(Collectors.toList());
+                .collect(Collectors.groupingBy(b -> b.type));
     }
 
     public static void main(String[] args) {
 
-        System.out.println("====== UC-8 TEST CASES ======\n");
+        System.out.println("====== UC-9 TEST CASES ======\n");
 
-        testFilter_CapacityGreaterThanThreshold();
-        testFilter_CapacityEqualToThreshold();
-        testFilter_CapacityLessThanThreshold();
-        testFilter_MultipleBogiesMatching();
-        testFilter_NoBogiesMatching();
-        testFilter_AllBogiesMatching();
-        testFilter_EmptyBogieList();
-        testFilter_OriginalListUnchanged();
+        testGrouping_BogiesGroupedByType();
+        testGrouping_MultipleBogiesInSameGroup();
+        testGrouping_DifferentBogieTypes();
+        testGrouping_EmptyBogieList();
+        testGrouping_SingleBogieCategory();
+        testGrouping_MapContainsCorrectKeys();
+        testGrouping_GroupSizeValidation();
+        testGrouping_OriginalListUnchanged();
     }
 
-    // 1. Greater than threshold
-    static void testFilter_CapacityGreaterThanThreshold() {
+    // 1. Basic grouping
+    static void testGrouping_BogiesGroupedByType() {
         List<Bogie> bogies = Arrays.asList(
-                new Bogie("B1", 60),
-                new Bogie("B2", 80)
+                new Bogie("B1", "Sleeper"),
+                new Bogie("B2", "Sleeper")
         );
 
-        List<Bogie> result = filterBogies(bogies, 70);
+        Map<String, List<Bogie>> result = groupBogies(bogies);
 
-        System.out.println("Test Greater Than Threshold: " +
-                (result.size() == 1 && result.get(0).name.equals("B2") ? "PASS" : "FAIL"));
+        System.out.println("Test Grouping Basic: " +
+                (result.containsKey("Sleeper") ? "PASS" : "FAIL"));
     }
 
-    // 2. Equal to threshold
-    static void testFilter_CapacityEqualToThreshold() {
+    // 2. Multiple bogies in same group
+    static void testGrouping_MultipleBogiesInSameGroup() {
         List<Bogie> bogies = Arrays.asList(
-                new Bogie("B1", 70)
+                new Bogie("B1", "AC"),
+                new Bogie("B2", "AC")
         );
 
-        List<Bogie> result = filterBogies(bogies, 70);
+        Map<String, List<Bogie>> result = groupBogies(bogies);
 
-        System.out.println("Test Equal To Threshold: " +
-                (result.isEmpty() ? "PASS" : "FAIL"));
+        System.out.println("Test Multiple Same Group: " +
+                (result.get("AC").size() == 2 ? "PASS" : "FAIL"));
     }
 
-    // 3. Less than threshold
-    static void testFilter_CapacityLessThanThreshold() {
+    // 3. Different types
+    static void testGrouping_DifferentBogieTypes() {
         List<Bogie> bogies = Arrays.asList(
-                new Bogie("B1", 50)
+                new Bogie("B1", "Sleeper"),
+                new Bogie("B2", "AC")
         );
 
-        List<Bogie> result = filterBogies(bogies, 70);
+        Map<String, List<Bogie>> result = groupBogies(bogies);
 
-        System.out.println("Test Less Than Threshold: " +
-                (result.isEmpty() ? "PASS" : "FAIL"));
-    }
-
-    // 4. Multiple matching
-    static void testFilter_MultipleBogiesMatching() {
-        List<Bogie> bogies = Arrays.asList(
-                new Bogie("B1", 80),
-                new Bogie("B2", 90)
-        );
-
-        List<Bogie> result = filterBogies(bogies, 70);
-
-        System.out.println("Test Multiple Matching: " +
+        System.out.println("Test Different Types: " +
                 (result.size() == 2 ? "PASS" : "FAIL"));
     }
 
-    // 5. No matching
-    static void testFilter_NoBogiesMatching() {
-        List<Bogie> bogies = Arrays.asList(
-                new Bogie("B1", 40),
-                new Bogie("B2", 50)
-        );
-
-        List<Bogie> result = filterBogies(bogies, 70);
-
-        System.out.println("Test No Matching: " +
-                (result.isEmpty() ? "PASS" : "FAIL"));
-    }
-
-    // 6. All matching
-    static void testFilter_AllBogiesMatching() {
-        List<Bogie> bogies = Arrays.asList(
-                new Bogie("B1", 80),
-                new Bogie("B2", 90)
-        );
-
-        List<Bogie> result = filterBogies(bogies, 70);
-
-        System.out.println("Test All Matching: " +
-                (result.size() == bogies.size() ? "PASS" : "FAIL"));
-    }
-
-    // 7. Empty list
-    static void testFilter_EmptyBogieList() {
+    // 4. Empty list
+    static void testGrouping_EmptyBogieList() {
         List<Bogie> bogies = new ArrayList<>();
 
-        List<Bogie> result = filterBogies(bogies, 70);
+        Map<String, List<Bogie>> result = groupBogies(bogies);
 
         System.out.println("Test Empty List: " +
                 (result.isEmpty() ? "PASS" : "FAIL"));
     }
 
+    // 5. Single category
+    static void testGrouping_SingleBogieCategory() {
+        List<Bogie> bogies = Arrays.asList(
+                new Bogie("B1", "General"),
+                new Bogie("B2", "General")
+        );
+
+        Map<String, List<Bogie>> result = groupBogies(bogies);
+
+        System.out.println("Test Single Category: " +
+                (result.size() == 1 ? "PASS" : "FAIL"));
+    }
+
+    // 6. Check keys
+    static void testGrouping_MapContainsCorrectKeys() {
+        List<Bogie> bogies = Arrays.asList(
+                new Bogie("B1", "Sleeper"),
+                new Bogie("B2", "AC Chair"),
+                new Bogie("B3", "First Class")
+        );
+
+        Map<String, List<Bogie>> result = groupBogies(bogies);
+
+        boolean condition = result.containsKey("Sleeper") &&
+                result.containsKey("AC Chair") &&
+                result.containsKey("First Class");
+
+        System.out.println("Test Map Keys: " +
+                (condition ? "PASS" : "FAIL"));
+    }
+
+    // 7. Group size validation
+    static void testGrouping_GroupSizeValidation() {
+        List<Bogie> bogies = Arrays.asList(
+                new Bogie("B1", "Sleeper"),
+                new Bogie("B2", "Sleeper")
+        );
+
+        Map<String, List<Bogie>> result = groupBogies(bogies);
+
+        System.out.println("Test Group Size: " +
+                (result.get("Sleeper").size() == 2 ? "PASS" : "FAIL"));
+    }
+
     // 8. Original list unchanged
-    static void testFilter_OriginalListUnchanged() {
+    static void testGrouping_OriginalListUnchanged() {
         List<Bogie> bogies = new ArrayList<>();
-        bogies.add(new Bogie("B1", 80));
+        bogies.add(new Bogie("B1", "AC"));
 
         int originalSize = bogies.size();
 
-        filterBogies(bogies, 70);
+        groupBogies(bogies);
 
         System.out.println("Test Original List Unchanged: " +
                 (bogies.size() == originalSize ? "PASS" : "FAIL"));
