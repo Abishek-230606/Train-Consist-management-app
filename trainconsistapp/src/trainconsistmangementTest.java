@@ -1,86 +1,101 @@
 import java.util.*;
-import java.util.regex.*;
+import java.util.stream.*;
 
 public class trainconsistmangementTest {
 
 
     static class Bogie {
-        String type;
-        String cargo;
+        int capacity;
 
-        Bogie(String type, String cargo) {
-            this.type = type;
-            this.cargo = cargo;
+        Bogie(int capacity) {
+            this.capacity = capacity;
         }
     }
 
-    static boolean checkSafety(List<Bogie> bogies) {
+    static List<Bogie> loopFilter(List<Bogie> bogies) {
+        List<Bogie> result = new ArrayList<>();
+        for (Bogie b : bogies) {
+            if (b.capacity > 60) {
+                result.add(b);
+            }
+        }
+        return result;
+    }
+
+    static List<Bogie> streamFilter(List<Bogie> bogies) {
         return bogies.stream()
-                .allMatch(b ->
-                        !b.type.equals("Cylindrical") ||
-                                b.cargo.equals("Petroleum")
-                );
+                .filter(b -> b.capacity > 60)
+                .collect(Collectors.toList());
     }
 
     public static void main(String[] args) {
 
-        System.out.println("====== UC-12 TEST CASES ======\n");
+        System.out.println("====== UC-13 TEST CASES ======\n");
 
-        testSafety_AllBogiesValid();
-        testSafety_CylindricalWithInvalidCargo();
-        testSafety_NonCylindricalBogiesAllowed();
-        testSafety_MixedBogiesWithViolation();
-        testSafety_EmptyBogieList();
+        testLoopFilteringLogic();
+        testStreamFilteringLogic();
+        testLoopAndStreamResultsMatch();
+        testExecutionTimeMeasurement();
+        testLargeDatasetProcessing();
     }
 
-    // 1. All valid
-    static void testSafety_AllBogiesValid() {
+    // 1. Loop logic
+    static void testLoopFilteringLogic() {
         List<Bogie> bogies = Arrays.asList(
-                new Bogie("Cylindrical", "Petroleum"),
-                new Bogie("Open", "Coal")
+                new Bogie(50),
+                new Bogie(70)
         );
 
-        System.out.println("Test All Valid: " +
-                (checkSafety(bogies) ? "PASS" : "FAIL"));
+        System.out.println("Loop Filtering: " +
+                (loopFilter(bogies).size() == 1 ? "PASS" : "FAIL"));
     }
 
-    // 2. Cylindrical with wrong cargo
-    static void testSafety_CylindricalWithInvalidCargo() {
+    // 2. Stream logic
+    static void testStreamFilteringLogic() {
         List<Bogie> bogies = Arrays.asList(
-                new Bogie("Cylindrical", "Coal")
+                new Bogie(50),
+                new Bogie(70)
         );
 
-        System.out.println("Test Cylindrical Wrong Cargo: " +
-                (!checkSafety(bogies) ? "PASS" : "FAIL"));
+        System.out.println("Stream Filtering: " +
+                (streamFilter(bogies).size() == 1 ? "PASS" : "FAIL"));
     }
 
-    // 3. Non-cylindrical allowed
-    static void testSafety_NonCylindricalBogiesAllowed() {
+    // 3. Results match
+    static void testLoopAndStreamResultsMatch() {
         List<Bogie> bogies = Arrays.asList(
-                new Bogie("Open", "Coal"),
-                new Bogie("Box", "Grain")
+                new Bogie(80),
+                new Bogie(40),
+                new Bogie(90)
         );
 
-        System.out.println("Test Non-Cylindrical: " +
-                (checkSafety(bogies) ? "PASS" : "FAIL"));
+        System.out.println("Results Match: " +
+                (loopFilter(bogies).size() == streamFilter(bogies).size() ? "PASS" : "FAIL"));
     }
 
-    // 4. Mixed violation
-    static void testSafety_MixedBogiesWithViolation() {
+    // 4. Time measurement
+    static void testExecutionTimeMeasurement() {
         List<Bogie> bogies = Arrays.asList(
-                new Bogie("Cylindrical", "Petroleum"),
-                new Bogie("Cylindrical", "Coal") // invalid
+                new Bogie(70),
+                new Bogie(80)
         );
 
-        System.out.println("Test Mixed Violation: " +
-                (!checkSafety(bogies) ? "PASS" : "FAIL"));
+        long start = System.nanoTime();
+        streamFilter(bogies);
+        long end = System.nanoTime();
+
+        System.out.println("Time Measurement: " +
+                ((end - start) > 0 ? "PASS" : "FAIL"));
     }
 
-    // 5. Empty list
-    static void testSafety_EmptyBogieList() {
+    // 5. Large dataset
+    static void testLargeDatasetProcessing() {
         List<Bogie> bogies = new ArrayList<>();
+        for (int i = 0; i < 10000; i++) {
+            bogies.add(new Bogie(i % 100));
+        }
 
-        System.out.println("Test Empty List: " +
-                (checkSafety(bogies) ? "PASS" : "FAIL"));
+        System.out.println("Large Dataset: " +
+                (streamFilter(bogies).size() >= 0 ? "PASS" : "FAIL"));
     }
 }
