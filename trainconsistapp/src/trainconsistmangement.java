@@ -1,9 +1,9 @@
 /**
  *  ============================================================
- *  * MAIN CLASS - UseCase10TrainConsistMgmt
+ *  * MAIN CLASS - UseCase12SafetyCheck
  *  * ============================================================
  *  *
- *  * Use Case 10: Count Total Seats using reduce()
+ *  * Use Case 12: Safety Compliance Check for Goods Bogies
  *
  * @author Abishek JS
  * @version 11.0
@@ -13,32 +13,35 @@ import java.util.*;
 import java.util.regex.*;
 
 public class trainconsistmangement  {
+    static class Bogie {
+        String type;   // Cylindrical, Open, Box
+        String cargo;  // Petroleum, Coal, Grain
+
+        Bogie(String type, String cargo) {
+            this.type = type;
+            this.cargo = cargo;
+        }
+    }
+
     public static void main(String[] args) {
 
-        System.out.println("===== UC11 - Regex Validation =====\n");
+        System.out.println("===== UC12 - Safety Compliance Check =====\n");
 
-        // Sample Inputs
-        String trainId = "TRN-1234";
-        String cargoCode = "PET-AB";
+        List<Bogie> bogies = Arrays.asList(
+                new Bogie("Cylindrical", "Petroleum"),
+                new Bogie("Open", "Coal"),
+                new Bogie("Box", "Grain")
+        );
 
-        // Regex Patterns
-        String trainPattern = "TRN-\\d{4}";
-        String cargoPattern = "PET-[A-Z]{2}";
-
-        // Compile patterns
-        Pattern p1 = Pattern.compile(trainPattern);
-        Pattern p2 = Pattern.compile(cargoPattern);
-
-        // Match input
-        Matcher m1 = p1.matcher(trainId);
-        Matcher m2 = p2.matcher(cargoCode);
-
-        // Validate
-        boolean isTrainValid = m1.matches();
-        boolean isCargoValid = m2.matches();
+        // Safety Rule using Stream
+        boolean isSafe = bogies.stream()
+                .allMatch(b ->
+                        !b.type.equals("Cylindrical") ||
+                                b.cargo.equals("Petroleum")
+                );
 
         // Output
-        System.out.println("Train ID: " + trainId + " -> " + (isTrainValid ? "Valid" : "Invalid"));
-        System.out.println("Cargo Code: " + cargoCode + " -> " + (isCargoValid ? "Valid" : "Invalid"));
+        System.out.println("Train Safety Status: " +
+                (isSafe ? "SAFE ✅" : "UNSAFE ❌"));
     }
 }
