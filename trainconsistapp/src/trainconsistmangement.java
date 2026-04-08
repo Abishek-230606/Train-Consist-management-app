@@ -13,11 +13,9 @@ import java.util.*;
 import java.util.stream.*;
 
 public class trainconsistmangement  {
-
     static class Bogie {
         String name;
         int capacity;
-
         Bogie(String name, int capacity) {
             this.name = name;
             this.capacity = capacity;
@@ -25,7 +23,6 @@ public class trainconsistmangement  {
     }
 
     public static void main(String[] args) {
-
         System.out.println("===== UC10 - Total Seating Capacity =====\n");
 
         List<Bogie> bogies = Arrays.asList(
@@ -40,5 +37,6 @@ public class trainconsistmangement  {
                 .reduce(0, Integer::sum);
 
         System.out.println("Total Seating Capacity: " + totalSeats);
+        System.out.println("------------------ ");
     }
 }
