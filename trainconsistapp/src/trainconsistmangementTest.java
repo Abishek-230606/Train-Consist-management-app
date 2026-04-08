@@ -5,136 +5,103 @@ public class trainconsistmangementTest {
 
     static class Bogie {
         String name;
-        String type;
+        int capacity;
 
-        // Constructor (NO return type here)
-        Bogie(String name, String type) {
+        Bogie(String name, int capacity) {
             this.name = name;
-            this.type = type;
+            this.capacity = capacity;
         }
     }
 
-    // Grouping method
-    static Map<String, List<Bogie>> groupBogies(List<Bogie> bogies) {
+    static int calculateTotalSeats(List<Bogie> bogies) {
         return bogies.stream()
-                .collect(Collectors.groupingBy(b -> b.type));
+                .map(b -> b.capacity)
+                .reduce(0, Integer::sum);
     }
 
     public static void main(String[] args) {
 
-        System.out.println("====== UC-9 TEST CASES ======\n");
+        System.out.println("====== UC-10 TEST CASES ======\n");
 
-        testGrouping_BogiesGroupedByType();
-        testGrouping_MultipleBogiesInSameGroup();
-        testGrouping_DifferentBogieTypes();
-        testGrouping_EmptyBogieList();
-        testGrouping_SingleBogieCategory();
-        testGrouping_MapContainsCorrectKeys();
-        testGrouping_GroupSizeValidation();
-        testGrouping_OriginalListUnchanged();
+        testReduce_TotalSeatCalculation();
+        testReduce_MultipleBogiesAggregation();
+        testReduce_SingleBogieCapacity();
+        testReduce_EmptyBogieList();
+        testReduce_AllBogiesIncluded();
+        testReduce_OriginalListUnchanged();
     }
 
-    // 1. Basic grouping
-    static void testGrouping_BogiesGroupedByType() {
+    // 1. Total calculation
+    static void testReduce_TotalSeatCalculation() {
         List<Bogie> bogies = Arrays.asList(
-                new Bogie("B1", "Sleeper"),
-                new Bogie("B2", "Sleeper")
+                new Bogie("B1", 70),
+                new Bogie("B2", 80)
         );
 
-        Map<String, List<Bogie>> result = groupBogies(bogies);
+        int result = calculateTotalSeats(bogies);
 
-        System.out.println("Test Grouping Basic: " +
-                (result.containsKey("Sleeper") ? "PASS" : "FAIL"));
+        System.out.println("Test Total Calculation: " +
+                (result == 150 ? "PASS" : "FAIL"));
     }
 
-    // 2. Multiple bogies in same group
-    static void testGrouping_MultipleBogiesInSameGroup() {
+    // 2. Multiple bogies
+    static void testReduce_MultipleBogiesAggregation() {
         List<Bogie> bogies = Arrays.asList(
-                new Bogie("B1", "AC"),
-                new Bogie("B2", "AC")
+                new Bogie("B1", 30),
+                new Bogie("B2", 40),
+                new Bogie("B3", 50)
         );
 
-        Map<String, List<Bogie>> result = groupBogies(bogies);
+        int result = calculateTotalSeats(bogies);
 
-        System.out.println("Test Multiple Same Group: " +
-                (result.get("AC").size() == 2 ? "PASS" : "FAIL"));
+        System.out.println("Test Multiple Bogies: " +
+                (result == 120 ? "PASS" : "FAIL"));
     }
 
-    // 3. Different types
-    static void testGrouping_DifferentBogieTypes() {
+    // 3. Single bogie
+    static void testReduce_SingleBogieCapacity() {
         List<Bogie> bogies = Arrays.asList(
-                new Bogie("B1", "Sleeper"),
-                new Bogie("B2", "AC")
+                new Bogie("B1", 60)
         );
 
-        Map<String, List<Bogie>> result = groupBogies(bogies);
+        int result = calculateTotalSeats(bogies);
 
-        System.out.println("Test Different Types: " +
-                (result.size() == 2 ? "PASS" : "FAIL"));
+        System.out.println("Test Single Bogie: " +
+                (result == 60 ? "PASS" : "FAIL"));
     }
 
     // 4. Empty list
-    static void testGrouping_EmptyBogieList() {
+    static void testReduce_EmptyBogieList() {
         List<Bogie> bogies = new ArrayList<>();
 
-        Map<String, List<Bogie>> result = groupBogies(bogies);
+        int result = calculateTotalSeats(bogies);
 
         System.out.println("Test Empty List: " +
-                (result.isEmpty() ? "PASS" : "FAIL"));
+                (result == 0 ? "PASS" : "FAIL"));
     }
 
-    // 5. Single category
-    static void testGrouping_SingleBogieCategory() {
+    // 5. All bogies included
+    static void testReduce_AllBogiesIncluded() {
         List<Bogie> bogies = Arrays.asList(
-                new Bogie("B1", "General"),
-                new Bogie("B2", "General")
+                new Bogie("B1", 10),
+                new Bogie("B2", 20),
+                new Bogie("B3", 30)
         );
 
-        Map<String, List<Bogie>> result = groupBogies(bogies);
+        int result = calculateTotalSeats(bogies);
 
-        System.out.println("Test Single Category: " +
-                (result.size() == 1 ? "PASS" : "FAIL"));
+        System.out.println("Test All Included: " +
+                (result == 60 ? "PASS" : "FAIL"));
     }
 
-    // 6. Check keys
-    static void testGrouping_MapContainsCorrectKeys() {
-        List<Bogie> bogies = Arrays.asList(
-                new Bogie("B1", "Sleeper"),
-                new Bogie("B2", "AC Chair"),
-                new Bogie("B3", "First Class")
-        );
-
-        Map<String, List<Bogie>> result = groupBogies(bogies);
-
-        boolean condition = result.containsKey("Sleeper") &&
-                result.containsKey("AC Chair") &&
-                result.containsKey("First Class");
-
-        System.out.println("Test Map Keys: " +
-                (condition ? "PASS" : "FAIL"));
-    }
-
-    // 7. Group size validation
-    static void testGrouping_GroupSizeValidation() {
-        List<Bogie> bogies = Arrays.asList(
-                new Bogie("B1", "Sleeper"),
-                new Bogie("B2", "Sleeper")
-        );
-
-        Map<String, List<Bogie>> result = groupBogies(bogies);
-
-        System.out.println("Test Group Size: " +
-                (result.get("Sleeper").size() == 2 ? "PASS" : "FAIL"));
-    }
-
-    // 8. Original list unchanged
-    static void testGrouping_OriginalListUnchanged() {
+    // 6. Original list unchanged
+    static void testReduce_OriginalListUnchanged() {
         List<Bogie> bogies = new ArrayList<>();
-        bogies.add(new Bogie("B1", "AC"));
+        bogies.add(new Bogie("B1", 50));
 
         int originalSize = bogies.size();
 
-        groupBogies(bogies);
+        calculateTotalSeats(bogies);
 
         System.out.println("Test Original List Unchanged: " +
                 (bogies.size() == originalSize ? "PASS" : "FAIL"));
