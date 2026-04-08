@@ -25,7 +25,7 @@
 import java.util.*;
 import java.util.stream.*;
 
-public class UseCase8TrainConsistMgmt {
+public class trainconsistmangement {
 
     // Reusing Bogie model
     static class Bogie {
