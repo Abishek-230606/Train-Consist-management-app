@@ -1,54 +1,68 @@
 /**
- *  ============================================================
- *  * MAIN CLASS - UseCase14CustomException
+ *   ============================================================
+ *  * MAIN CLASS - UseCase15SafeCargoAssignment
  *  * ============================================================
  *  *
- *  * Use Case 14: Handle Invalid Bogie Capacity
+ *  * Use Case 15: Safe Cargo Assignment using try-catch-finally
  *
  * @author Abishek JS
- * @version 14.0
+ * @version 15.0
  */
 
 import java.util.*;
 import java.util.stream.*;
 
-class InvalidCapacityException extends Exception {
-    InvalidCapacityException(String message) {
+class CargoSafetyException extends RuntimeException {
+    CargoSafetyException(String message) {
         super(message);
     }
 }
 
-
+// Bogie class
 class Bogie {
-    String name;
-    int capacity;
+    String shape;  // Cylindrical, Rectangular
+    String cargo;
 
-    // Constructor with validation
-    Bogie(String name, int capacity) throws InvalidCapacityException {
-        if (capacity <= 0) {
-            throw new InvalidCapacityException("Capacity must be greater than zero");
+    Bogie(String shape) {
+        this.shape = shape;
+    }
+
+    // Assign cargo with safety check
+    void assignCargo(String cargo) {
+        try {
+            // Rule: Rectangular cannot carry Petroleum
+            if (shape.equals("Rectangular") && cargo.equals("Petroleum")) {
+                throw new CargoSafetyException("Unsafe cargo assignment!");
+            }
+
+            this.cargo = cargo;
+            System.out.println("Cargo assigned successfully: " + cargo);
+
+        } catch (CargoSafetyException e) {
+            System.out.println("Error: " + e.getMessage());
+
+        } finally {
+            System.out.println("Assignment attempt completed.\n");
         }
-        this.name = name;
-        this.capacity = capacity;
     }
 }
 
-
-public class trainconsistmangement  {
+public class trainconsistmangement {
 
     public static void main(String[] args) {
 
-        System.out.println("===== UC14 - Custom Exception =====\n");
+        System.out.println("===== UC15 - Safe Cargo Assignment =====\n");
 
-        try {
-            Bogie b1 = new Bogie("B1", 70);  // valid
-            System.out.println("Created: " + b1.name);
+        Bogie b1 = new Bogie("Cylindrical");
+        Bogie b2 = new Bogie("Rectangular");
 
-            Bogie b2 = new Bogie("B2", -10); // invalid
-            System.out.println("Created: " + b2.name);
+        // Safe assignment
+        b1.assignCargo("Petroleum");
 
-        } catch (InvalidCapacityException e) {
-            System.out.println("Error: " + e.getMessage());
-        }
+        // Unsafe assignment
+        b2.assignCargo("Petroleum");
+
+        // Program continues
+        b2.assignCargo("Coal");
     }
 }
